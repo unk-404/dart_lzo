@@ -1,5 +1,10 @@
 # lzo_neo
 
+[![pub package](https://img.shields.io/pub/v/lzo_neo.svg)](https://pub.dev/packages/lzo_neo)
+[![CI](https://github.com/unk-404/dart_lzo/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/unk-404/dart_lzo/actions/workflows/ci.yml)
+
+![LZO1X benchmarks: Dart vs liblzo2 2.10](https://raw.githubusercontent.com/unk-404/dart_lzo/master/assets/benchmarks.svg)
+
 Pure Dart implementation of the [LZO](https://www.oberhumer.com/opensource/lzo/)
 compression algorithms. No native code, no FFI: the same code runs on the Dart
 VM, in AOT builds, and on the web.
@@ -33,7 +38,7 @@ dependencies:
 
 ```dart
 import 'package:blit/blit.dart';
-import 'package:lzo_neo/lzo.dart';
+import 'package:lzo_neo/lzo_neo.dart';
 
 final codec = Lzo1x();
 final original = Bytes.fromString('hello, lzo world!');

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:blit/blit.dart';
-import 'package:lzo_neo/lzo.dart';
+import 'package:lzo_neo/lzo_neo.dart';
 import 'package:test/test.dart';
 
 Uint8List _read(String name) => File('test/data/$name').readAsBytesSync();

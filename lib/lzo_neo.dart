@@ -6,7 +6,7 @@
 ///
 /// ```dart
 /// import 'package:blit/blit.dart';
-/// import 'package:lzo_neo/lzo.dart';
+/// import 'package:lzo_neo/lzo_neo.dart';
 ///
 /// final codec = Lzo1x();
 /// final packed = codec.compress(Bytes.fromString('hello, lzo world!'));

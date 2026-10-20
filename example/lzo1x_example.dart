@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:blit/blit.dart';
-import 'package:lzo_neo/lzo.dart';
+import 'package:lzo_neo/lzo_neo.dart';
 
 void main() {
   final codec = Lzo1x();

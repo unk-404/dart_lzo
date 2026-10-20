@@ -1,6 +1,6 @@
 /// LZO1X throughput benchmarks (Dart side).
 ///
-/// Measures, through the public `package:lzo_neo/lzo.dart` API and nothing
+/// Measures, through the public `package:lzo_neo/lzo_neo.dart` API and nothing
 /// else, one LZO1X-1 compression and one decompression per deterministic
 /// corpus block. Compression ratio rows are emitted by `canonical.dart`, which
 /// re-derives them from the same corpus so a chart always reports the ratio of
@@ -19,7 +19,7 @@ library;
 import 'dart:typed_data';
 
 import 'package:benchmark_test/benchmark_test.dart';
-import 'package:lzo_neo/lzo.dart';
+import 'package:lzo_neo/lzo_neo.dart';
 
 import 'corpus.dart';
 

@@ -1,6 +1,15 @@
 name: lzo_neo
-description: Pure Dart implementation of the LZO compression algorithms.
+description: >-
+  Pure Dart implementation of the LZO1X lossless compression algorithm, with
+  liblzo2-compatible streams and zero native dependencies.
 version: 0.1.0
+repository: https://github.com/unk-404/dart_lzo
+issue_tracker: https://github.com/unk-404/dart_lzo/issues
+topics:
+  - compression
+  - lzo
+  - codec
+
 environment:
   sdk: ^3.13.5
 

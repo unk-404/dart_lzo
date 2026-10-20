@@ -19,7 +19,7 @@ benchmark/
 ```
 
 The workflow that drives all of it is
-[`.github/workflows/benchmark.yml`](../.github/workflows/benchmark.yml).
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml).
 
 ## Corpus (identical in Dart and C)
 

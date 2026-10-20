@@ -12,7 +12,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:lzo_neo/lzo.dart';
+import 'package:lzo_neo/lzo_neo.dart';
 import 'package:test/test.dart';
 
 import '../tool/vectors/sha256.dart';

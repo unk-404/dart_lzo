@@ -3,7 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:blit/blit.dart';
-import 'package:lzo_neo/lzo.dart';
+import 'package:lzo_neo/lzo_neo.dart';
 import 'package:lzo_neo/src/lzo1x/encoder.dart';
 import 'package:test/test.dart';
 
