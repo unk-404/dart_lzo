@@ -17,7 +17,7 @@ subtitle = "{platform} | commit {commit:short} | higher is better, ratio: lower 
 footer = "Dart benchmark_test (AOT) vs liblzo2 2.10 (C) | deterministic corpus | {rows} rows"
 theme = "pastel"
 width = 920
-# The ratio rows span 0.004x..1.004x; a log bar keeps the small ratios visible.
+# Linear bars: a ratio of 0.004x is genuinely tiny next to 1.0x.
 bar_curve = "log"
 bar_scale = "row"
 

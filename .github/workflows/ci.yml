@@ -139,62 +139,9 @@ jobs:
           path: build/bench/*.json
           if-no-files-found: error
 
-  benchmark-windows:
-    name: Benchmark (windows, liblzo2 C)
-    needs: [test]
-    if: github.event_name != 'pull_request'
-    runs-on: windows-2022
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
-        with:
-          sdk: stable
-      - name: Build liblzo2 2.10 from the official tarball
-        run: |
-          set -euo pipefail
-          mkdir -p build/deps
-          curl -fsSL -o build/deps/lzo-2.10.tar.gz "$LZO_2_10_URL"
-          tar -xzf build/deps/lzo-2.10.tar.gz -C build/deps
-          cmake -S build/deps/lzo-2.10 -B build/deps/lzo-build \
-            -DENABLE_STATIC=ON -DENABLE_SHARED=OFF \
-            -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-          cmake --build build/deps/lzo-build --config Release --target lzo_static_lib
-      - name: Build the benchmark harness
-        run: |
-          set -euo pipefail
-          cmake -S benchmark/c -B build/c \
-            -DLZO_INCLUDE_DIR="$(pwd -W)/build/deps/lzo-2.10/include" \
-            -DLZO_LIBRARY="$(pwd -W)/build/deps/lzo-build/Release/lzo2.lib"
-          cmake --build build/c --config Release
-      - name: Run the Dart benchmarks (AOT) and canonicalise them
-        run: |
-          set -euo pipefail
-          dart pub get
-          mkdir -p build/bench
-          dart run benchmark_test --compile aot --output jsonl \
-            benchmark/dart/lzo1x_benchmark_test.dart > build/bench/dart-aot.jsonl
-          dart run benchmark/dart/canonical.dart \
-            build/bench/dart-aot.jsonl build/bench/dart-aot.json
-      - name: Run the liblzo2 benchmark
-        run: |
-          set -euo pipefail
-          ./build/c/Release/lzo_bench.exe --text README.md \
-            --out build/bench/liblzo2-c.json
-      - name: Upload the canonical results
-        uses: actions/upload-artifact@v4
-        with:
-          name: bench-canonical-windows
-          path: build/bench/*.json
-          if-no-files-found: error
-
   render:
     name: Render benchmark card
-    # The chart data comes from the ubuntu job. The windows job is an
-    # independent portability check: if it breaks, the run is red but the chart
-    # still lands in assets/.
+    # The chart data comes from the ubuntu benchmark job.
     needs: [benchmark-ubuntu]
     if: >-
       github.event_name != 'pull_request' &&

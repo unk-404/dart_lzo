@@ -13,7 +13,6 @@ benchmark/
     canonical.dart              benchmark_test JSONL -> benchcat canonical JSON
   c/
     bench.c                     same corpus/operations against liblzo2 2.10
-    CMakeLists.txt              build the harness (Windows/MSVC, Linux, macOS)
     Makefile                    build the harness against a system liblzo2
   benchcat.toml                 chart config: two series, title/subtitle/theme
 ```
@@ -152,36 +151,6 @@ To use a locally built liblzo2 prefix (`include/lzo/*.h` + `lib/liblzo2.a`):
 make -C benchmark/c LZO_PREFIX=/opt/lzo-2.10
 ```
 
-### Windows: liblzo2 2.10 built from the official tarball with CMake/MSVC
-
-```sh
-mkdir -p build/deps
-curl -fsSL -o build/deps/lzo-2.10.tar.gz \
-  https://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
-tar -xzf build/deps/lzo-2.10.tar.gz -C build/deps
-cmake -S build/deps/lzo-2.10 -B build/deps/lzo-build \
-  -DENABLE_STATIC=ON -DENABLE_SHARED=OFF \
-  -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-cmake --build build/deps/lzo-build --config Release --target lzo_static_lib
-
-cmake -S benchmark/c -B build/c \
-  -DLZO_INCLUDE_DIR="$(pwd -W)/build/deps/lzo-2.10/include" \
-  -DLZO_LIBRARY="$(pwd -W)/build/deps/lzo-build/Release/lzo2.lib"
-cmake --build build/c --config Release
-./build/c/Release/lzo_bench.exe --text README.md --out build/bench/liblzo2-c.json
-```
-
-`pwd -W` is Git Bash's Windows-style working directory; a native shell can pass
-`D:/...` paths directly.
-
-`-DCMAKE_POLICY_VERSION_MINIMUM=3.5` is only needed for CMake 4.x, which dropped
-compatibility with the `cmake_minimum_required(VERSION 3.0)` used by lzo-2.10;
-older CMake versions ignore the unused variable with a warning.
-
-`CMakeLists.txt` also accepts `-DLZO_ROOT=<prefix>`, a prefix with
-`include/lzo/lzo1x.h` and `lib/`, for example the output of
-`cmake --install`.
-
 ## Render the card (CI only)
 
 [`benchcat.toml`](benchcat.toml) declares the two series:
@@ -234,7 +203,6 @@ and commits `assets/benchmarks.svg` on the default branch when the bytes changed
 - The two canonical files were rendered locally with a dev-only benchcat
   binary (`cargo install --git ...`, never in CI): 36 rows, 2 series,
   920x2238 SVG. Repeated renders are byte-identical.
-- The Windows MSVC build and the benchcat GitHub Action itself run only in CI
-  (no MSVC toolchain on the development machine); the workflow mirrors the
-  locally verified commands.
+- The benchcat GitHub Action itself runs only in CI; the locally verified
+  commands are exactly what the workflow runs.
 
