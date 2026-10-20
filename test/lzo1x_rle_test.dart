@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:blit/blit.dart';
 import 'package:lzo_neo/lzo_neo.dart';
-import 'package:lzo_neo/src/lzo1x/rle.dart';
 import 'package:test/test.dart';
 
 Uint8List _random(int length, int seed) {

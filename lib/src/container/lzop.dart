@@ -64,6 +64,7 @@ final class LzopOptions {
     this.mode = 0,
     this.crc32 = false,
     this.compressedChecksums = false,
+    this.quality = 9,
   });
 
   /// Uncompressed block size. lzop's default is 256 KiB.
@@ -86,6 +87,9 @@ final class LzopOptions {
 
   /// Also checksum the compressed payload of compressed blocks.
   final bool compressedChecksums;
+
+  /// LZO1X-999 search effort (1..9); ignored by the fast levels.
+  final int quality;
 }
 
 /// In-memory lzop container codec.
@@ -125,7 +129,7 @@ final class Lzop {
     _putUint16(header, _libVersion);
     _putUint16(header, _versionNeeded);
     header.addByte(_methodForLevel(options.level));
-    header.addByte(1); // lzop level field, 1..9
+    header.addByte(options.level == Lzo1xLevel.max ? options.quality : 1);
     _putUint32(header, flags);
     _putUint32(header, options.mode & 0xffffffff);
     _putUint32(header, options.mtime & 0xffffffff);
@@ -143,7 +147,7 @@ final class Lzop {
     out.add(headerBytes);
     _putUint32(out, headerChecksum);
 
-    final codec = Lzo1x(level: options.level);
+    final codec = Lzo1x(level: options.level, quality: options.quality);
     for (var start = 0; start < source.length; start += options.blockSize) {
       final end = start + options.blockSize < source.length
           ? start + options.blockSize
@@ -399,7 +403,11 @@ final class Lzop {
       Bytes.fromUint8List(decompress(source.asUint8List()));
 }
 
-int _methodForLevel(Lzo1xLevel level) => level == Lzo1xLevel.fast15 ? 2 : 1;
+int _methodForLevel(Lzo1xLevel level) => switch (level) {
+  Lzo1xLevel.fast15 => 2,
+  Lzo1xLevel.max => 3,
+  _ => 1,
+};
 
 void _checkMethod(int method, int level) {
   if (method < 1 || method > 3) {

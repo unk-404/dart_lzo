@@ -64,7 +64,7 @@ jobs:
       # read fixtures with dart:io, so the browser job runs the web-safe
       # round-trip suite explicitly instead of the whole test directory.
       - name: Run web-safe tests in Chrome
-        run: dart test -p chrome test/lzo1x_roundtrip_test.dart
+        run: dart test -p chrome test/lzo1x_roundtrip_test.dart test/web_all_test.dart
 
   differential:
     name: Differential vs liblzo2 2.10
@@ -94,11 +94,15 @@ jobs:
           tool/oracle/lzo_oracle version
       - name: Run the differential
         run: dart run tool/differential.dart --oracle tool/oracle/lzo_oracle
+      - name: Run the full-matrix differential
+        run: dart run tool/differential_all.dart --oracle tool/oracle/lzo_oracle
       - name: Verify the committed vectors are reproducible
         run: |
           set -euo pipefail
           LZO_ORACLE="$PWD/tool/oracle/lzo_oracle" \
             bash tool/vectors/generate.sh
+          LZO_ORACLE="$PWD/tool/oracle/lzo_oracle" \
+            bash tool/vectors/generate_families.sh
           git diff --exit-code -- test/data
 
   # TEST -> benchmark -> assets/benchmarks.svg, all in this workflow.

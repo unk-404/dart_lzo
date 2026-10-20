@@ -13,9 +13,6 @@ import 'limits.dart';
 /// Raw LZO blocks carry no header and no original length, so decompression
 /// needs a destination buffer that is large enough for the whole output.
 abstract interface class LzoCodec {
-  /// The worst-case compressed size for [sourceLength] input bytes.
-  int compressBound(int sourceLength);
-
   /// Compresses [source] into [destination] and returns the number of bytes
   /// written.
   ///
@@ -42,7 +39,6 @@ abstract interface class LzoCodec {
 abstract base class LzoCodecBase implements LzoCodec {
   const LzoCodecBase();
 
-  @override
   int compressBound(int sourceLength) => lzoCompressBound(sourceLength);
 
   @override

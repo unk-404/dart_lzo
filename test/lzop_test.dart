@@ -91,6 +91,15 @@ void main() {
       expect(lzop.decompress(file), orderedEquals(source));
     });
 
+    test('LZO1X-999 payloads round-trip', () {
+      final source = _text(200000);
+      final file = lzop.compress(
+        source,
+        options: const LzopOptions(level: Lzo1xLevel.max),
+      );
+      expect(lzop.decompress(file), orderedEquals(source));
+    });
+
     test('file name and mtime', () {
       final source = _text(4096);
       final file = lzop.compress(

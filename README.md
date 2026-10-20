@@ -14,13 +14,26 @@ the variant used by `lzop`, the Linux kernel, btrfs and SquashFS.
 
 ## Status
 
-| Feature | Status |
+The complete liblzo2 2.10 algorithm matrix is implemented in both directions:
+
+| Algorithm | Levels |
 |---|---|
-| LZO1X decompress (safe, fully validating) | ✅ |
-| LZO1X compress: `lzo1x_1`, `1_11`, `1_12`, `1_15` | ✅ |
-| LZO1X-999, LZO1Y, LZO1Z, LZO1B, LZO1C, LZO1F, LZO1, LZO1A, LZO2A encoders | planned for 0.1.1 |
-| `lzo1x_optimize` / in-place decompression | planned for 0.1.1 |
-| LZO-RLE, `lzop` container | planned for 0.1.1 |
+| LZO1 | 1, 99 |
+| LZO1A | 1, 99 |
+| LZO1B | 1..9, 99, 999 |
+| LZO1C | 1..9, 99, 999 |
+| LZO1F | 1, 999 |
+| LZO1X | 1, 11, 12, 15, 999 (quality 1..9) |
+| LZO1Y | 1, 999 (quality 1..9) |
+| LZO1Z | 999 (quality 1..9) |
+| LZO2A | 999 |
+
+Also supported:
+
+- preset-dictionary compression and decompression for LZO1X/LZO1Y/LZO1Z
+- `lzo1x_optimize` and true in-place decompression
+- the Linux kernel LZO-RLE bitstream (version 1)
+- the `lzop` file container (`package:lzo_neo/lzop.dart`)
 
 Compressed LZO blocks carry no header and no original size, so decompression
 needs the caller to supply the output capacity, exactly like liblzo2.
@@ -29,7 +42,7 @@ needs the caller to supply the output capacity, exactly like liblzo2.
 
 ```yaml
 dependencies:
-  lzo_neo: ^0.1.0
+  lzo_neo: ^0.1.1
 ```
 
 ## Usage
@@ -49,7 +62,7 @@ final restored = codec.decompress(packed, original.length);
 Zero-allocation operation on raw `Uint8List` buffers:
 
 ```dart
-final output = Uint8List(codec.compressBound(input.length));
+final output = Uint8List(Lzo1x.compressBound(input.length));
 final compressedLength = codec.compressInto(input, output);
 
 final decoded = Uint8List(originalLength);
@@ -57,26 +70,60 @@ final decodedLength = codec.decompressInto(output, decoded);
 ```
 
 Reuse a codec instance to reuse its compression work memory (64 KiB for
-`Lzo1xLevel.fast1`, 8/16/128 KiB for `fast11`/`fast12`/`fast15`).
+`Lzo1xLevel.fast1`, 8/16/128 KiB for `fast11`/`fast12`/`fast15`; LZO1X-999 uses
+a 448 KiB sliding-window workspace).
+
+Any algorithm, selected by name:
+
+```dart
+final lzo1b = lzoCodec(LzoAlgorithm.lzo1b, level: 9);
+final lzo2a = lzoCodec(LzoAlgorithm.lzo2a); // level 999
+```
+
+LZO-RLE (kernel bitstream v1) and the lzop container are separate entry points:
+
+```dart
+import 'package:lzo_neo/lzop.dart';
+
+final kernelBlock = Lzo1xRle().compress(source);
+final lzopFile = const Lzop().compress(source.asUint8List());
+final restored = const Lzop().decompress(lzopFile);
+```
+
+In-place decoding is available for LZO1X blocks:
+
+```dart
+// Canonical lzop layout: the compressed block sits at the end of the buffer.
+final buffer = Uint8List(outputLength + outputLength ~/ 16 + 64 + 3);
+buffer.setRange(buffer.length - compressed.length, buffer.length, compressed);
+codec.decompressInPlace(
+  buffer,
+  compressedOffset: buffer.length - compressed.length,
+  compressedLength: compressed.length,
+  outputLength: outputLength,
+);
+```
 
 ## Safety
 
-The decoder validates every instruction and every write. Malformed, truncated
+The decoders validate every instruction and every write. Malformed, truncated
 or oversized input throws `LzoException` with a liblzo2-compatible
-`LzoErrorCode`; it never reads out of bounds, writes out of bounds, or loops
-forever. No memory is allocated while decompressing.
+`LzoErrorCode`; they never read out of bounds, write out of bounds, or loop
+forever. Decompression allocates no memory.
 
 ## Correctness
 
-Streams are tested against vectors produced by the reference C implementation
-(liblzo2 2.10) and, in CI, differentially in both directions:
+Every algorithm and level is tested against fixtures produced by the reference
+C implementation (liblzo2 2.10). CI also runs a full-matrix differential in both
+directions over all 36 compressor levels, plus preset-dictionary cases:
 
 - liblzo2 compress → Dart decompress
 - Dart compress → liblzo2 decompress
 - Dart compress → Dart decompress
 
 The LZO1X grammar follows liblzo2's `src/lzo1x_d.ch` and the format description
-in the Linux kernel (`Documentation/staging/lzo.rst`).
+in the Linux kernel (`Documentation/staging/lzo.rst`). LZO-RLE is verified in
+both directions against the Linux kernel compressor/decompressor.
 
 ## License
 

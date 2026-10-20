@@ -315,7 +315,10 @@ static int lzo_failure(const char *operation, int code) {
  * (`n + n / 16 + 64 + 3`); the extra bytes cover the end-of-stream marker and
  * any encoder-specific slack. */
 static size_t compress_bound(size_t length) {
-  return length + length / 16 + 64 + 3;
+  /* Generous test-tool capacity: the n + n/16 + 64 + 3 bound is documented
+   * for LZO1X, and a few legacy formats expand a little more on
+   * incompressible input. The oracle only feeds differential tests. */
+  return 2 * length + 4096;
 }
 
 static const compressor_entry *find_compressor(const char *algorithm,
