@@ -104,7 +104,7 @@ jobs:
   # TEST -> benchmark -> assets/benchmarks.svg, all in this workflow.
   benchmark-ubuntu:
     name: Benchmark (ubuntu, liblzo2 C)
-    needs: [test, differential]
+    needs: [test]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     steps:
@@ -137,7 +137,7 @@ jobs:
 
   benchmark-windows:
     name: Benchmark (windows, liblzo2 C)
-    needs: [test, differential]
+    needs: [test]
     if: github.event_name != 'pull_request'
     runs-on: windows-2022
     defaults:
