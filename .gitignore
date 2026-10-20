@@ -1,9 +1,10 @@
 # https://dart.dev/tools/private-files
-# Created by `dart pub`
 .dart_tool/
+build/
+coverage/
 
-# Avoid committing pubspec.lock for library packages; see
-# https://dart.dev/tools/pub/private-files#pubspec-lock.
+# Library packages do not commit the lock file.
 pubspec.lock
 
+# Agent scratch space (plans, reference sources, generated vectors).
 .agents/

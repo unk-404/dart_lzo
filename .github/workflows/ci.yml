@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Install dependencies
+        run: dart pub get
+      - name: Analyze
+        run: dart analyze
+      # The repository is not currently `dart format` clean (files predate this
+      # workflow), so no format gate is enforced. Once the tree is formatted,
+      # add:
+      #   dart format --output=none --set-exit-if-changed .
+
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Install dependencies
+        run: dart pub get
+      - name: Run tests
+        run: dart test
+
+  web:
+    name: Web smoke test (Chrome)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Install dependencies
+        run: dart pub get
+      # lib/ is web-safe (no dart:io). Some test files are VM-only because they
+      # read fixtures with dart:io, so the browser job runs the web-safe
+      # round-trip suite explicitly instead of the whole test directory.
+      - name: Run web-safe tests in Chrome
+        run: dart test -p chrome test/lzo1x_roundtrip_test.dart
+
+  differential:
+    name: Differential vs liblzo2 2.10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Install Dart dependencies
+        run: dart pub get
+      - name: Build liblzo2 2.10 from the official tarball
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 \
+            -o "$RUNNER_TEMP/lzo-2.10.tar.gz" \
+            https://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
+          tar -xzf "$RUNNER_TEMP/lzo-2.10.tar.gz" -C "$RUNNER_TEMP"
+          cd "$RUNNER_TEMP/lzo-2.10"
+          ./configure --enable-static --disable-shared
+          make -j"$(nproc)"
+      - name: Build the oracle CLI
+        run: |
+          make -C tool/oracle \
+            LZO_INCLUDE="$RUNNER_TEMP/lzo-2.10/include" \
+            LZO_LIBDIR="$RUNNER_TEMP/lzo-2.10/src/.libs"
+          tool/oracle/lzo_oracle version
+      - name: Run the differential
+        run: dart run tool/differential.dart --oracle tool/oracle/lzo_oracle
+      - name: Verify the committed vectors are reproducible
+        run: |
+          set -euo pipefail
+          LZO_ORACLE="$PWD/tool/oracle/lzo_oracle" \
+            bash tool/vectors/generate.sh
+          git diff --exit-code -- test/data

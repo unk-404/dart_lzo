@@ -1,0 +1,7 @@
+// 00000 # lzo_neo
+// 00001 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00002 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00003 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00004 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00005 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00006 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the

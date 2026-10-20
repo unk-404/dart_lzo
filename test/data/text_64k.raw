@@ -1,0 +1,429 @@
+// 00000 # lzo_neo
+// 00001 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00002 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00003 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00004 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00005 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00006 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00007 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00008 # lzo_neo
+// 00009 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00010 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00011 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00012 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00013 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00014 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00015 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00016 # lzo_neo
+// 00017 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00018 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00019 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00020 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00021 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00022 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00023 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00024 # lzo_neo
+// 00025 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00026 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00027 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00028 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00029 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00030 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00031 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00032 # lzo_neo
+// 00033 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00034 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00035 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00036 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00037 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00038 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00039 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00040 # lzo_neo
+// 00041 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00042 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00043 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00044 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00045 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00046 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00047 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00048 # lzo_neo
+// 00049 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00050 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00051 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00052 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00053 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00054 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00055 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00056 # lzo_neo
+// 00057 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00058 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00059 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00060 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00061 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00062 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00063 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00064 # lzo_neo
+// 00065 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00066 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00067 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00068 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00069 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00070 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00071 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00072 # lzo_neo
+// 00073 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00074 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00075 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00076 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00077 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00078 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00079 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00080 # lzo_neo
+// 00081 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00082 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00083 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00084 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00085 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00086 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00087 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00088 # lzo_neo
+// 00089 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00090 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00091 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00092 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00093 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00094 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00095 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00096 # lzo_neo
+// 00097 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00098 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00099 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00100 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00101 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00102 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00103 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00104 # lzo_neo
+// 00105 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00106 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00107 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00108 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00109 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00110 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00111 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00112 # lzo_neo
+// 00113 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00114 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00115 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00116 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00117 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00118 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00119 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00120 # lzo_neo
+// 00121 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00122 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00123 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00124 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00125 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00126 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00127 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00128 # lzo_neo
+// 00129 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00130 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00131 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00132 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00133 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00134 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00135 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00136 # lzo_neo
+// 00137 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00138 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00139 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00140 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00141 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00142 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00143 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00144 # lzo_neo
+// 00145 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00146 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00147 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00148 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00149 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00150 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00151 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00152 # lzo_neo
+// 00153 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00154 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00155 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00156 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00157 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00158 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00159 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00160 # lzo_neo
+// 00161 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00162 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00163 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00164 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00165 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00166 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00167 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00168 # lzo_neo
+// 00169 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00170 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00171 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00172 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00173 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00174 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00175 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00176 # lzo_neo
+// 00177 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00178 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00179 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00180 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00181 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00182 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00183 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00184 # lzo_neo
+// 00185 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00186 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00187 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00188 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00189 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00190 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00191 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00192 # lzo_neo
+// 00193 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00194 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00195 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00196 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00197 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00198 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00199 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00200 # lzo_neo
+// 00201 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00202 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00203 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00204 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00205 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00206 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00207 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00208 # lzo_neo
+// 00209 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00210 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00211 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00212 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00213 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00214 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00215 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00216 # lzo_neo
+// 00217 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00218 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00219 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00220 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00221 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00222 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00223 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00224 # lzo_neo
+// 00225 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00226 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00227 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00228 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00229 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00230 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00231 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00232 # lzo_neo
+// 00233 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00234 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00235 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00236 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00237 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00238 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00239 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00240 # lzo_neo
+// 00241 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00242 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00243 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00244 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00245 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00246 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00247 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00248 # lzo_neo
+// 00249 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00250 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00251 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00252 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00253 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00254 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00255 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00256 # lzo_neo
+// 00257 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00258 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00259 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00260 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00261 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00262 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00263 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00264 # lzo_neo
+// 00265 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00266 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00267 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00268 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00269 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00270 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00271 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00272 # lzo_neo
+// 00273 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00274 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00275 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00276 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00277 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00278 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00279 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00280 # lzo_neo
+// 00281 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00282 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00283 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00284 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00285 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00286 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00287 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00288 # lzo_neo
+// 00289 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00290 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00291 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00292 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00293 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00294 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00295 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00296 # lzo_neo
+// 00297 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00298 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00299 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00300 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00301 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00302 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00303 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00304 # lzo_neo
+// 00305 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00306 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00307 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00308 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00309 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00310 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00311 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00312 # lzo_neo
+// 00313 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00314 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00315 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00316 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00317 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00318 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00319 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00320 # lzo_neo
+// 00321 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00322 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00323 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00324 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00325 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00326 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00327 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00328 # lzo_neo
+// 00329 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00330 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00331 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00332 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00333 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00334 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00335 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00336 # lzo_neo
+// 00337 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00338 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00339 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00340 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00341 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00342 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00343 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00344 # lzo_neo
+// 00345 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00346 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00347 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00348 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00349 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00350 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00351 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00352 # lzo_neo
+// 00353 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00354 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00355 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00356 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00357 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00358 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00359 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00360 # lzo_neo
+// 00361 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00362 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00363 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00364 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00365 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00366 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00367 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00368 # lzo_neo
+// 00369 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00370 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00371 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00372 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00373 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00374 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00375 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00376 # lzo_neo
+// 00377 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00378 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00379 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00380 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00381 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00382 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00383 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00384 # lzo_neo
+// 00385 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00386 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00387 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00388 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00389 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00390 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00391 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00392 # lzo_neo
+// 00393 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00394 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00395 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00396 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00397 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00398 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00399 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00400 # lzo_neo
+// 00401 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00402 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00403 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00404 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00405 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00406 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00407 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00408 # lzo_neo
+// 00409 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00410 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00411 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00412 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00413 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00414 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00415 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00416 # lzo_neo
+// 00417 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00418 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00419 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00420 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is the documented worst case for one LZO1X block.
+// 00421 The decoder validates every literal run and back-reference before it copies, which keeps malformed input from reading or writing outside either buffer.
+// 00422 Matches may overlap the bytes they produce, so copying one byte at a time reproduces the behaviour of liblzo2's lzo1x_decompress_safe and of the in-kernel decoder.
+// 00423 Seeded fixtures keep the corpus reproducible: the xorshift32 streams below never depend on the platform, the Dart SDK version or the host default random number generator.
+// 00424 # lzo_neo
+// 00425 A pure Dart implementation of the LZO1X block codec. Raw blocks carry no header and no original length, so the caller supplies the size of the destination buffer.
+// 00426 The encoder emits literal runs and back-references; each match names an earlier position in the output, and short matches are encoded with the distance operand in the low bits.
+// 00427 LZO1X favours decompression speed: the format has four match encodings (M1 through M4) with different distance and length ranges, followed by the end-of-stream marker 0x11 0x00 0x00.
+// 00428 const bound = source.length + (source.length >> 4) + 64 + 3; // n + n/16 + 64 + 3 is t

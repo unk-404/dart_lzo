@@ -1,0 +1,11 @@
+# Normalize every text file to LF; binary fixtures below opt out.
+* text=auto eol=lf
+
+# Keep compressed test vectors byte-exact on every checkout.
+test/data/** binary
+*.lzo binary
+*.raw binary
+
+# Build scripts are fed to bash/make; CRLF would break them on Linux and WSL.
+*.sh text eol=lf
+Makefile text eol=lf

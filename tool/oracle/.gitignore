@@ -1,0 +1,4 @@
+# Build artifact of the oracle CLI.
+lzo_oracle
+lzo_oracle.exe
+*.o

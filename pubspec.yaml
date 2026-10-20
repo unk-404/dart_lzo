@@ -1,15 +1,13 @@
 name: lzo_neo
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
-# repository: https://github.com/my_org/my_repo
-
+description: Pure Dart implementation of the LZO compression algorithms.
+version: 0.1.0
 environment:
   sdk: ^3.13.5
 
-# Add regular dependencies here.
 dependencies:
-  # path: ^1.9.0
+  blit: ^0.1.4
 
 dev_dependencies:
+  benchmark_test: ^0.1.2
   lints: ^6.0.0
   test: ^1.25.6

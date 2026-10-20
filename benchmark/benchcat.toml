@@ -1,0 +1,33 @@
+# benchcat configuration for the lzo_neo benchmark card.
+#
+# Rendered by .github/workflows/benchmark.yml through the `unk-404/benchcat@master`
+# action. Never run the benchcat CLI as a workflow step and never vendor a
+# binary or a font: the action installs its own binary and carries its own OFL
+# catalogue.
+#
+# `[[series]]` takes precedence over a positional `input`, so the workflow only
+# passes `config`/`format`/`out`. Inputs are repository-root relative.
+#
+# Both files are canonical JSON (`benchcat/report@1`) with identical ids, in the
+# same order: lzo1x.<compress|decompress|ratio>.<64KiB|1MiB|8MiB>.<corpus>.
+
+[render]
+title = "lzo_neo: LZO1X-1 vs liblzo2 2.10"
+subtitle = "{platform} | commit {commit:short} | higher is better, ratio: lower is better"
+footer = "Dart benchmark_test (AOT) vs liblzo2 2.10 (C) | deterministic corpus | {rows} rows"
+theme = "pastel"
+width = 920
+# The ratio rows span 0.004x..1.004x; a log bar keeps the small ratios visible.
+bar_curve = "log"
+bar_scale = "row"
+
+[[series]]
+label = "Dart AOT"
+input = "build/bench/dart-aot.json"
+format = "json"
+
+[[series]]
+label = "liblzo2 2.10 (C)"
+input = "build/bench/liblzo2-c.json"
+format = "json"
+color = "#8CB8F0"
