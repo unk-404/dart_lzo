@@ -1,6 +1,6 @@
 # benchcat configuration for the lzo_neo benchmark card.
 #
-# Rendered by .github/workflows/benchmark.yml through the `unk-404/benchcat@master`
+# Rendered by .github/workflows/ci.yml through the `unk-404/benchcat@master`
 # action. Never run the benchcat CLI as a workflow step and never vendor a
 # binary or a font: the action installs its own binary and carries its own OFL
 # catalogue.
@@ -18,7 +18,7 @@ footer = "Dart benchmark_test (AOT) vs liblzo2 2.10 (C) | deterministic corpus |
 theme = "pastel"
 width = 920
 # Linear bars: a ratio of 0.004x is genuinely tiny next to 1.0x.
-bar_curve = "log"
+bar_curve = "linear"
 bar_scale = "row"
 
 [[series]]
