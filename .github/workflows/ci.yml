@@ -32,6 +32,8 @@ jobs:
         run: dart analyze
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed lib test tool benchmark example
+      - name: Validate package metadata
+        run: dart pub publish --dry-run
 
   test:
     name: Test (${{ matrix.os }})

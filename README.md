@@ -42,7 +42,7 @@ needs the caller to supply the output capacity, exactly like liblzo2.
 
 ```yaml
 dependencies:
-  lzo_neo: ^0.1.1
+  lzo_neo: ^0.1.2
 ```
 
 ## Usage
@@ -124,6 +124,20 @@ directions over all 36 compressor levels, plus preset-dictionary cases:
 The LZO1X grammar follows liblzo2's `src/lzo1x_d.ch` and the format description
 in the Linux kernel (`Documentation/staging/lzo.rst`). LZO-RLE is verified in
 both directions against the Linux kernel compressor/decompressor.
+
+## Performance
+
+AOT x64, 17.5 MiB mixed corpus (text + binary + source):
+
+- LZO1X-1 compression: ~400 MB/s (ByteData-based 32-bit match scanning and
+  8-byte match extension)
+- LZO1X decompression: ~780 MB/s, faster than the C build on the same machine
+- LZO1X-999 is deliberately slow (several MB/s): it exists for pre-compressed
+  data, not real-time use
+
+The CI benchmark card compares LZO1X-1 with liblzo2 2.10 on a deterministic
+corpus. Codec performance for the legacy families is not benchmarked yet; the
+API and correctness are.
 
 ## License
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.2
+
+- Production hardening release.
+- CI: all-family fixtures no longer depend on README.md, so documentation edits
+  cannot break the reproducibility gate.
+- Performance: LZO1X-1 uses unaligned 32-bit match scanning and 8-byte match
+  extension (~20-30% faster than 0.1.1); family hash tables clear in bulk.
+- API: LzoCodec.compressedSizeBound for manual output buffers.
+- Added an all-family fuzz suite and codec-API tests.
+- Benchmark chart switches to a linear scale; the unused Windows benchmark job
+  and its CMake build were removed.
+
 ## 0.1.1
 
 - Complete liblzo2 2.10 algorithm matrix in both directions: LZO1, LZO1A,
