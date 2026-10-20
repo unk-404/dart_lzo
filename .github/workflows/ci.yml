@@ -188,7 +188,10 @@ jobs:
 
   render:
     name: Render benchmark card
-    needs: [benchmark-ubuntu, benchmark-windows]
+    # The chart data comes from the ubuntu job. The windows job is an
+    # independent portability check: if it breaks, the run is red but the chart
+    # still lands in assets/.
+    needs: [benchmark-ubuntu]
     if: >-
       github.event_name != 'pull_request' &&
       github.ref == 'refs/heads/master'
