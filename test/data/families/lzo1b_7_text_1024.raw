@@ -1,22 +1,6 @@
-# lzo_neo
-
-[![pub package](https://img.shields.io/pub/v/lzo_neo.svg)](https://pub.dev/packages/lzo_neo)
-[![CI](https://github.com/unk-404/dart_lzo/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/unk-404/dart_lzo/actions/workflows/ci.yml)
-
-![LZO1X benchmarks: Dart vs liblzo2 2.10](https://raw.githubusercontent.com/unk-404/dart_lzo/master/assets/benchmarks.svg)
-
-Pure Dart implementation of the [LZO](https://www.oberhumer.com/opensource/lzo/)
-compression algorithms. No native code, no FFI: the same code runs on the Dart
-VM, in AOT builds, and on the web.
-
-LZO is a lossless block compressor optimised for decompression speed. LZO1X is
-the variant used by `lzop`, the Linux kernel, btrfs and SquashFS.
-
-## Status
-
-| Feature | Status |
-|---|---|
-| LZO1X decompress (safe, fully validating) | ✅ |
-| LZO1X compress: `lzo1x_1`, `1_11`, `1_12`, `1_15` | ✅ |
-| LZO1X-999, LZO1Y, LZO1Z, LZO1B, LZO1C, LZO1F, LZO1, LZO1A, LZO2A encoders | planned for 0.1.1 |
-| `lzo1x_optimize` / in-place decompression |
+LZO is a lossless block compression algorithm focused on fast decompression. It represents a block as a sequence of literal runs and back-references into a sliding dictionary.
+The compressor trades ratio for speed: level 1 is a single-pass greedy search, while level 999 performs a lazy search over a large window and is intended for pre-compressed data.
+Decompression is deliberately simple and allocation-free. Every opcode is validated so that truncated or corrupted blocks fail with a typed error instead of reading out of bounds.
+LZO1X is the variant used by lzop, the Linux kernel, btrfs and SquashFS. LZO1B and LZO1C favour more redundant data, and LZO2A uses a bit-oriented grammar.
+LZO is a lossless block compression algorithm focused on fast decompression. It represents a block as a sequence of literal runs and back-references into a sliding dictionary.
+The compressor trades ratio for speed: level 1 is a single-pass greedy search, while level 999 performs a lazy search over a large window and is intended for

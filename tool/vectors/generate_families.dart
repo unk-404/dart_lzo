@@ -72,11 +72,10 @@ void main(List<String> arguments) {
     }
   }
 
-  final text = File('README.md').readAsBytesSync();
   final corpus = <String, Uint8List>{
     'empty': Uint8List(0),
     for (final size in _sizes)
-      for (final kind in _kinds) '${kind}_$size': _build(kind, size, text),
+      for (final kind in _kinds) '${kind}_$size': _build(kind, size),
   };
 
   final cases = <Map<String, Object>>[];
@@ -136,12 +135,31 @@ void main(List<String> arguments) {
   );
 }
 
-Uint8List _build(String kind, int size, Uint8List text) {
+/// Fixed text sample for the `text` corpus.
+///
+/// The fixtures must not depend on repository files such as README.md: editing
+/// the README would otherwise change every committed text vector and make the
+/// CI reproducibility check fail. This sample is part of the generator.
+const String _textSeed =
+    'LZO is a lossless block compression algorithm focused on fast '
+    'decompression. It represents a block as a sequence of literal runs and '
+    'back-references into a sliding dictionary.\n'
+    'The compressor trades ratio for speed: level 1 is a single-pass greedy '
+    'search, while level 999 performs a lazy search over a large window and is '
+    'intended for pre-compressed data.\n'
+    'Decompression is deliberately simple and allocation-free. Every opcode is '
+    'validated so that truncated or corrupted blocks fail with a typed error '
+    'instead of reading out of bounds.\n'
+    'LZO1X is the variant used by lzop, the Linux kernel, btrfs and SquashFS. '
+    'LZO1B and LZO1C favour more redundant data, and LZO2A uses a bit-oriented '
+    'grammar.\n';
+
+Uint8List _build(String kind, int size) {
   final out = Uint8List(size);
   switch (kind) {
     case 'text':
       for (var i = 0; i < size; i++) {
-        out[i] = text[i % text.length];
+        out[i] = _textSeed.codeUnitAt(i % _textSeed.length);
       }
     case 'random':
       var state = 0x9e3779b9;
