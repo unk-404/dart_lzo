@@ -33,5 +33,8 @@ int lzo1xCompressBound(int sourceLength) {
   return sourceLength + (sourceLength >> 4) + 64 + 3;
 }
 
+/// Worst-case compressed size shared by every LZO algorithm family.
+int lzoCompressBound(int sourceLength) => lzo1xCompressBound(sourceLength);
+
 /// The maximum distance encodable by an LZO1X M4 match (`0xBFFF`).
 const int lzo1xMaxDistance = 0xBFFF;
