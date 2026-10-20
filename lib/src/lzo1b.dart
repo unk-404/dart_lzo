@@ -166,7 +166,7 @@ int _compress(
   }
 
   final head = work.head;
-  head.fillRange(0, head.length, 0);
+  head.setRange(0, head.length, _zeroTable);
   final previous = work.previousFor(length);
   final mask = head.length - 1;
   final searchDepth = level.searchDepth;
@@ -543,3 +543,6 @@ final class _Writer {
     writeByte(encoded >> 8);
   }
 }
+
+/// Shared all-zero source for bulk table clears.
+final Uint32List _zeroTable = Uint32List(1 << 16);

@@ -481,7 +481,7 @@ final class _Chain {
   var _inserted = 0;
 
   void reset() {
-    heads.fillRange(0, heads.length, 0);
+    heads.setRange(0, heads.length, _zeroTable);
     _inserted = 0;
   }
 
@@ -614,3 +614,6 @@ int _compressMax(
   }
   return sink.offset;
 }
+
+/// Shared all-zero source for bulk table clears.
+final Uint32List _zeroTable = Uint32List(1 << 16);

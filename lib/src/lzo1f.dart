@@ -440,7 +440,7 @@ final class _MatchFinder {
 int _compressMax(Uint8List source, Uint8List destination, _Lzo1fWork work) {
   final heads = work.chainHeads ??= Uint32List(_hashSize);
   final links = work.chainLinks ??= Uint32List(_hashSize);
-  heads.fillRange(0, _hashSize, 0);
+  heads.setRange(0, _hashSize, _zeroTable);
 
   final length = source.length;
   final finder = _MatchFinder(source, heads, links);
@@ -656,3 +656,6 @@ Never _throwLookbehindOverrun(int inputOffset, int outputOffset) => throwLzo(
   inputOffset: inputOffset,
   outputOffset: outputOffset,
 );
+
+/// Shared all-zero source for bulk table clears.
+final Uint32List _zeroTable = Uint32List(1 << 16);

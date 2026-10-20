@@ -76,6 +76,13 @@ int lzo1xCompress(
   var op = 0;
   var literalStart = 0;
 
+  // Unaligned 32-bit reads through `ByteData` are considerably faster than
+  // four separate `Uint8List` reads on the Dart VM.
+  final data = source.buffer.asByteData(
+    source.offsetInBytes,
+    source.lengthInBytes,
+  );
+
   // The first token must not be a match: a match needs at least one byte of
   // history, and a leading literal run can be encoded very compactly in the
   // first byte. liblzo2 starts its match search at offset 4 for the same
@@ -84,11 +91,7 @@ int lzo1xCompress(
   var ip = 4;
 
   while (ip <= lastMatchStart) {
-    final b0 = source[ip];
-    final b1 = source[ip + 1];
-    final b2 = source[ip + 2];
-    final b3 = source[ip + 3];
-    final value = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
+    final value = data.getUint32(ip, Endian.little);
     final hash =
         ((value * 0x1824429d) >>> (32 - dictionaryBits)) & (dictionarySize - 1);
 
@@ -100,12 +103,20 @@ int lzo1xCompress(
       final matchPos = entry - 1;
       final distance = ip - matchPos;
       if (distance <= _m4MaxOffset &&
-          source[matchPos] == b0 &&
-          source[matchPos + 1] == b1 &&
-          source[matchPos + 2] == b2 &&
-          source[matchPos + 3] == b3) {
+          data.getUint32(matchPos, Endian.little) == value) {
         var length = 4;
         final maxLength = sourceLength - ip;
+        // Long matches dominate compressible blocks; compare eight bytes per
+        // iteration, then finish with a byte loop at the first differing block.
+        while (length + 8 <= maxLength) {
+          if (data.getUint32(matchPos + length, Endian.little) !=
+                  data.getUint32(ip + length, Endian.little) ||
+              data.getUint32(matchPos + length + 4, Endian.little) !=
+                  data.getUint32(ip + length + 4, Endian.little)) {
+            break;
+          }
+          length += 8;
+        }
         while (length < maxLength &&
             source[matchPos + length] == source[ip + length]) {
           length++;
@@ -157,6 +168,7 @@ int lzo1xCompress(
 /// most three it is folded into the `SS` bits of the preceding match (which is
 /// always the last token at that point); otherwise a standalone literal-run
 /// opcode is written. Returns the updated output offset.
+@pragma('vm:prefer-inline')
 int _emitLiteralRun(
   Uint8List destination,
   int op,
@@ -209,6 +221,7 @@ int _emitLiteralRun(
 ///
 /// The smallest match token is chosen for the distance: M2 up to 2 KiB, M3 up
 /// to 16 KiB and M4 up to the LZO1X maximum. Returns the updated output offset.
+@pragma('vm:prefer-inline')
 int _emitMatch(Uint8List destination, int op, int length, int distance) {
   if (length <= 8 && distance <= _m2MaxOffset) {
     final offset = distance - 1;
@@ -263,6 +276,7 @@ int _emitMatch(Uint8List destination, int op, int length, int distance) {
 }
 
 /// Throws [LzoErrorCode.outputOverrun] unless [count] bytes are available.
+@pragma('vm:prefer-inline')
 void _require(Uint8List destination, int offset, int count) {
   if (count > destination.length - offset) {
     throwLzo(

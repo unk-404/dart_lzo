@@ -383,8 +383,8 @@ final class _MatchFinder {
   var _inserted = 0;
 
   void reset() {
-    head2.fillRange(0, head2.length, 0);
-    head3.fillRange(0, head3.length, 0);
+    head2.setRange(0, head2.length, _zeroTable);
+    head3.setRange(0, head3.length, _zeroTable);
     _inserted = 0;
   }
 
@@ -572,3 +572,6 @@ int _lzo2aCompress(
   writer.finish();
   return writer.offset;
 }
+
+/// Shared all-zero source for bulk table clears.
+final Uint32List _zeroTable = Uint32List(1 << 16);

@@ -49,6 +49,9 @@ final class Lzo1x implements LzoCodec {
   static int compressBound(int sourceLength) =>
       lzo1xCompressBound(sourceLength);
 
+  @override
+  int compressedSizeBound(int sourceLength) => compressBound(sourceLength);
+
   /// Compresses [source] into [destination] and returns the number of bytes
   /// written.
   ///
