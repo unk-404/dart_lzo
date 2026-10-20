@@ -26,6 +26,7 @@ export 'src/core/limits.dart'
         lzo1x15MemCompress,
         lzo1x1MemCompress,
         lzo1xCompressBound,
+        lzoCompressBound,
         lzo1xMaxDistance;
 export 'src/lzo1.dart' show Lzo1, Lzo1Level;
 export 'src/lzo1a.dart' show Lzo1a, Lzo1aLevel;
