@@ -98,8 +98,20 @@ final class Lzo999Workspace {
   final Uint16List _head2 = Uint16List(_swdH2Size);
   final Uint32List _bestPos = Uint32List(_swdBestOff);
   final Uint32List _bestOff = Uint32List(_swdBestOff);
+  bool _disposed = false;
+
+  /// Marks this workspace as released. The GC reclaims the arrays.
+  void dispose() {
+    _disposed = true;
+  }
+
+  /// Whether [dispose] has been called.
+  bool get isDisposed => _disposed;
 
   void _reset() {
+    if (_disposed) {
+      throw StateError('Lzo999Workspace has been disposed');
+    }
     // `head3`, `succ3` and `best3` are gated by `llen3`, so only the chain
     // lengths and the exact-match table need clearing between blocks.
     _llen3.setRange(0, _swdHsize, _clearH3);

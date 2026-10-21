@@ -42,7 +42,7 @@ needs the caller to supply the output capacity, exactly like liblzo2.
 
 ```yaml
 dependencies:
-  lzo_neo: ^0.2.1
+  lzo_neo: ^0.2.2
 ```
 
 ## Usage
@@ -151,7 +151,13 @@ final best = Lzo1x(speed: Lzo1xSpeed.bestRatio);    // ~21.5% ratio
 `
 
 All three produce standard LZO1X streams. Lzo1xLevel.fast1 uses a 256 KiB
-hash table; reuse one codec instance to reuse it.
+hash table; reuse one codec instance to reuse it. Call codec.dispose() when
+it is no longer needed.
+
+lzop block buffers use lit UnsafeBytes (native malloc, WebAssembly
+arena on the web) and are freed in inally. The hot codec tables stay in GC
+typed arrays: external memory measured 10-20% slower in the 999 and fast
+matchers, so performance takes priority there.
 
 The CI benchmark card compares LZO1X-1 with liblzo2 2.10 on a deterministic
 corpus. Legacy-family performance is not benchmarked yet; correctness and the

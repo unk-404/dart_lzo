@@ -70,6 +70,26 @@ void main() {
     }
   });
 
+  test('dispose releases work memory and rejects reuse', () {
+    final codec = Lzo1x();
+    final source = _data(4096, 23);
+    codec.compress(Bytes.fromUint8List(source));
+    codec.dispose();
+    expect(codec.isDisposed, isTrue);
+    expect(codec.dispose, returnsNormally);
+    expect(
+      () => codec.compressInto(source, Uint8List(8192)),
+      throwsA(isA<StateError>()),
+    );
+  });
+
+  test('999 workspace dispose is idempotent', () {
+    final workspace = Lzo999Workspace();
+    workspace.dispose();
+    expect(workspace.isDisposed, isTrue);
+    expect(workspace.dispose, returnsNormally);
+  });
+
   test('unknown levels are rejected', () {
     final matcher = throwsA(
       isA<LzoException>().having(

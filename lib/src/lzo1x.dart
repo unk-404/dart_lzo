@@ -52,6 +52,27 @@ final class Lzo1x implements LzoCodec {
 
   Uint32List? _dictionary;
   Lzo999Workspace? _workspace999;
+  bool _disposed = false;
+
+  /// Releases the compression work memory owned by this codec.
+  ///
+  /// The codec must not be used afterwards. Calling it more than once is safe.
+  void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    _workspace999?.dispose();
+    _workspace999 = null;
+    _dictionary = null;
+  }
+
+  /// Whether [dispose] has released this codec's work memory.
+  bool get isDisposed => _disposed;
+
+  void _checkNotDisposed() {
+    if (_disposed) {
+      throw StateError('Lzo1x codec has been disposed');
+    }
+  }
 
   /// The worst-case compressed size for [sourceLength] input bytes.
   static int compressBound(int sourceLength) =>
@@ -68,6 +89,7 @@ final class Lzo1x implements LzoCodec {
   /// [LzoErrorCode.outputOverrun] is thrown.
   @override
   int compressInto(Uint8List source, Uint8List destination) {
+    _checkNotDisposed();
     final input = _overlaps(source, destination)
         ? Uint8List.fromList(source)
         : source;
@@ -116,6 +138,7 @@ final class Lzo1x implements LzoCodec {
   /// too small. No memory is allocated.
   @override
   int decompressInto(Uint8List source, Uint8List destination) {
+    _checkNotDisposed();
     if (dictionary != null) {
       return lzoFamilyDecompress(
         source,
@@ -136,8 +159,10 @@ final class Lzo1x implements LzoCodec {
   ///
   /// This is the Dart equivalent of liblzo2's `lzo1x_optimize`; it is an
   /// optional optimisation, not a requirement for valid streams.
-  int optimizeInto(Uint8List block, Uint8List output) =>
-      lzo1xOptimize(block, output);
+  int optimizeInto(Uint8List block, Uint8List output) {
+    _checkNotDisposed();
+    return lzo1xOptimize(block, output);
+  }
 
   /// Decompresses one LZO1X block in place.
   ///
@@ -154,12 +179,15 @@ final class Lzo1x implements LzoCodec {
     required int compressedOffset,
     required int compressedLength,
     required int outputLength,
-  }) => lzo1xDecompressInPlace(
-    buffer,
-    compressedOffset: compressedOffset,
-    compressedLength: compressedLength,
-    outputLength: outputLength,
-  );
+  }) {
+    _checkNotDisposed();
+    return lzo1xDecompressInPlace(
+      buffer,
+      compressedOffset: compressedOffset,
+      compressedLength: compressedLength,
+      outputLength: outputLength,
+    );
+  }
 
   /// Decompresses one raw LZO1X block into a newly allocated [Bytes].
   ///

@@ -12,6 +12,7 @@ library;
 import 'dart:typed_data';
 
 import 'package:blit/blit_buffer.dart';
+import 'package:blit/unsafe.dart';
 
 import '../core/checksum.dart';
 import '../core/errors.dart';
@@ -150,42 +151,48 @@ final class Lzop {
     _putUint32(out, headerChecksum);
 
     final codec = Lzo1x(level: options.level, quality: options.quality);
-    for (var start = 0; start < source.length; start += options.blockSize) {
-      final end = start + options.blockSize < source.length
-          ? start + options.blockSize
-          : source.length;
-      final raw = Uint8List.sublistView(source, start, end);
-      final compressed = Uint8List(Lzo1x.compressBound(raw.length));
-      final compressedLength = codec.compressInto(raw, compressed);
-      final stored = compressedLength >= raw.length;
-      final payloadLength = stored ? raw.length : compressedLength;
+    final scratchLength = Lzo1x.compressBound(options.blockSize);
+    final scratch = UnsafeBytes.alloc(scratchLength);
+    final compressed = scratch.view(scratchLength);
+    try {
+      for (var start = 0; start < source.length; start += options.blockSize) {
+        final end = start + options.blockSize < source.length
+            ? start + options.blockSize
+            : source.length;
+        final raw = Uint8List.sublistView(source, start, end);
+        final compressedLength = codec.compressInto(raw, compressed);
+        final stored = compressedLength >= raw.length;
+        final payloadLength = stored ? raw.length : compressedLength;
 
-      _putUint32(out, raw.length);
-      _putUint32(out, payloadLength);
-      if (options.crc32) {
-        _putUint32(out, lzoCrc32(0, raw));
-      } else {
-        _putUint32(out, lzoAdler32(1, raw));
-      }
-      if (!stored) {
+        _putUint32(out, raw.length);
+        _putUint32(out, payloadLength);
         if (options.crc32) {
-          if (options.compressedChecksums) {
-            _putUint32(out, lzoCrc32(0, compressed, 0, compressedLength));
-          }
-        } else if (options.compressedChecksums) {
-          _putUint32(out, lzoAdler32(1, compressed, 0, compressedLength));
+          _putUint32(out, lzoCrc32(0, raw));
+        } else {
+          _putUint32(out, lzoAdler32(1, raw));
         }
-        out.putBytes(
-          Bytes.fromUint8List(
-            Uint8List.sublistView(compressed, 0, compressedLength),
-          ),
-        );
-      } else {
-        out.putBytes(Bytes.fromUint8List(raw));
+        if (!stored) {
+          if (options.crc32) {
+            if (options.compressedChecksums) {
+              _putUint32(out, lzoCrc32(0, compressed, 0, compressedLength));
+            }
+          } else if (options.compressedChecksums) {
+            _putUint32(out, lzoAdler32(1, compressed, 0, compressedLength));
+          }
+          out.putBytes(
+            Bytes.fromUint8List(
+              Uint8List.sublistView(compressed, 0, compressedLength),
+            ),
+          );
+        } else {
+          out.putBytes(Bytes.fromUint8List(raw));
+        }
       }
+      _putUint32(out, 0);
+      return out.freeze();
+    } finally {
+      scratch.free();
     }
-    _putUint32(out, 0);
-    return out.freeze();
   }
 
   /// Decompresses a complete `.lzo` file.
@@ -344,51 +351,56 @@ final class Lzop {
       }
 
       final payload = reader.readView(compressedLength);
-      final block = Uint8List(uncompressedLength);
-      if (compressedLength < uncompressedLength) {
-        final written = codec.decompressInto(payload, block);
-        if (written != uncompressedLength) {
-          throwLzo(
-            LzoErrorCode.outputOverrun,
-            message:
-                'lzop block decoded to $written bytes, expected '
-                '$uncompressedLength',
-            inputOffset: reader.offset,
-          );
+      final scratch = UnsafeBytes.alloc(uncompressedLength);
+      try {
+        final block = scratch.view(uncompressedLength);
+        if (compressedLength < uncompressedLength) {
+          final written = codec.decompressInto(payload, block);
+          if (written != uncompressedLength) {
+            throwLzo(
+              LzoErrorCode.outputOverrun,
+              message:
+                  'lzop block decoded to $written bytes, expected '
+                  '$uncompressedLength',
+              inputOffset: reader.offset,
+            );
+          }
+          if ((flags & _fAdler32C) != 0 && adlerC != lzoAdler32(1, payload)) {
+            throwLzo(
+              LzoErrorCode.error,
+              message: 'lzop compressed block checksum mismatch',
+              inputOffset: reader.offset,
+            );
+          }
+          if ((flags & _fCrc32C) != 0 && crcC != lzoCrc32(0, payload)) {
+            throwLzo(
+              LzoErrorCode.error,
+              message: 'lzop compressed block CRC mismatch',
+              inputOffset: reader.offset,
+            );
+          }
+        } else {
+          block.setRange(0, uncompressedLength, payload);
         }
-        if ((flags & _fAdler32C) != 0 && adlerC != lzoAdler32(1, payload)) {
-          throwLzo(
-            LzoErrorCode.error,
-            message: 'lzop compressed block checksum mismatch',
-            inputOffset: reader.offset,
-          );
-        }
-        if ((flags & _fCrc32C) != 0 && crcC != lzoCrc32(0, payload)) {
-          throwLzo(
-            LzoErrorCode.error,
-            message: 'lzop compressed block CRC mismatch',
-            inputOffset: reader.offset,
-          );
-        }
-      } else {
-        block.setRange(0, uncompressedLength, payload);
-      }
 
-      if ((flags & _fAdler32D) != 0 && adlerD != lzoAdler32(1, block)) {
-        throwLzo(
-          LzoErrorCode.error,
-          message: 'lzop block checksum mismatch',
-          inputOffset: reader.offset,
-        );
+        if ((flags & _fAdler32D) != 0 && adlerD != lzoAdler32(1, block)) {
+          throwLzo(
+            LzoErrorCode.error,
+            message: 'lzop block checksum mismatch',
+            inputOffset: reader.offset,
+          );
+        }
+        if ((flags & _fCrc32D) != 0 && crcD != lzoCrc32(0, block)) {
+          throwLzo(
+            LzoErrorCode.error,
+            message: 'lzop block CRC mismatch',
+            inputOffset: reader.offset,
+          );
+        }
+        output.putBytes(Bytes.fromUint8List(block));
+      } finally {
+        scratch.free();
       }
-      if ((flags & _fCrc32D) != 0 && crcD != lzoCrc32(0, block)) {
-        throwLzo(
-          LzoErrorCode.error,
-          message: 'lzop block CRC mismatch',
-          inputOffset: reader.offset,
-        );
-      }
-      output.putBytes(Bytes.fromUint8List(block));
     }
     if (!reader.atEnd) {
       throwLzo(

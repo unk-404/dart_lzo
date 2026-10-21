@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.2
+
+- Upgrade to lit 0.2.1 and use its new UnsafeBytes external memory for
+  lzop block scratch buffers (explicitly freed in inally).
+- Benchmarked UnsafeBytes for the hot LZO1X-1 dictionary and LZO1X-999
+  workspace; external memory was 10-20% slower there, so those tables stay in
+  GC typed arrays. The web arena's grow-invalidates-views behavior is also
+  avoided in the codec.
+- Lzo1x.dispose and Lzo999Workspace.dispose eagerly drop work memory;
+  reusing a disposed codec throws StateError.
+- lzop continues to use BytesReader/BytesMut/Bytes internally.
+
 ## 0.2.1
 
 - Upgrade to lit 0.2.0.
