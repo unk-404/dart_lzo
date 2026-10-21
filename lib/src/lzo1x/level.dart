@@ -10,7 +10,7 @@ import '../core/limits.dart';
 /// sliding-window workspace and the configurable quality 1..9 search effort.
 enum Lzo1xLevel {
   /// `lzo1x_1_compress`: 16 384 dictionary entries, 64 KiB of work memory.
-  fast1(1, 14),
+  fast1(1, 16),
 
   /// `lzo1x_1_11_compress`: 2 048 entries, 8 KiB of work memory.
   fast11(11, 11),
@@ -41,4 +41,30 @@ enum Lzo1xLevel {
   /// Work memory required by this level, in bytes.
   int get memCompress =>
       isMax ? 14 * 16384 * 2 : dictionarySize * lzoDictEntrySize;
+}
+
+/// Match-search aggressiveness for the fast LZO1X levels.
+///
+/// The encoder's hash table is a single-probe design; these modes trade ratio
+/// for scan speed by changing how far the matcher skips after a literal run.
+enum Lzo1xSpeed {
+  /// Largest skip: fastest, fewest match probes.
+  fastest(1, 1024),
+
+  /// Middle ground.
+  balanced(2, 512),
+
+  /// liblzo2-like density: slowest, best ratio.
+  bestRatio(5, 0xc000);
+
+  const Lzo1xSpeed(this.skipShift, this.skipCap);
+
+  /// Right-shift applied to the literal gap when computing the skip stride.
+  final int skipShift;
+
+  /// Maximum literal gap used for the stride.
+  ///
+  /// Without a cap, an aggressive shift skips over distant matches entirely
+  /// (for example a repeated 5 KiB document in an 8 MiB block).
+  final int skipCap;
 }

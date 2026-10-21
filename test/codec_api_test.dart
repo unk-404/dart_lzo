@@ -55,6 +55,21 @@ void main() {
     }
   });
 
+  test('every speed mode round-trips', () {
+    final source = Uint8List.fromList(
+      List<int>.generate(
+        8192,
+        (i) => 'the quick brown fox '.codeUnitAt(i % 20),
+      ),
+    );
+    for (final speed in Lzo1xSpeed.values) {
+      final codec = Lzo1x(speed: speed);
+      final compressed = codec.compress(Bytes.fromUint8List(source));
+      final restored = codec.decompress(compressed, source.length);
+      expect(restored.asUint8List(), orderedEquals(source), reason: speed.name);
+    }
+  });
+
   test('unknown levels are rejected', () {
     final matcher = throwsA(
       isA<LzoException>().having(

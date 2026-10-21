@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.2.0
+
+Performance-focused redesign, with no stream-format changes.
+
+- LZO1X-1 match finder rewritten around 64-bit unaligned loads:
+  - 8-byte match extension with mask-based first-difference detection
+  - `ByteData.getUint64` on the VM, 32-bit fallback on the web
+  - 65 536-entry hash table (256 KiB) to remove most collisions
+  - inline VM fast path for the match loop
+- Decoder copy paths:
+  - short non-overlapping matches copied with 8-byte loads
+  - trailing state literals copied with explicit stores
+  - inlined literal/match helpers
+- New `Lzo1xSpeed` (`fastest`, `balanced`, `bestRatio`) to tune the
+  speed/ratio trade-off; all modes emit standard LZO1X.
+- Measured on a 17.5 MiB mixed corpus against liblzo2 2.10 `-O2`:
+  - decompression: ~875-915 MB/s, **80-83% of native**
+  - LZO1X-1 compression: ~570-585 MB/s mixed (65-67%), ~6.0-6.8 GB/s on 8 MiB text (~100%)
+- `Lzo1xLevel.fast1` now uses a 256 KiB work table (was 64 KiB). Existing
+  streams are unaffected.
+- Tests: 888 pass; full-matrix differential remains 1936/1936.
+
 ## 0.1.2
 
 - Production hardening release.
@@ -7,7 +29,7 @@
   cannot break the reproducibility gate.
 - Performance: LZO1X-1 uses unaligned 32-bit match scanning and 8-byte match
   extension (~20-30% faster than 0.1.1); family hash tables clear in bulk.
-- API: LzoCodec.compressedSizeBound for manual output buffers.
+- API: `LzoCodec.compressedSizeBound` for manual output buffers.
 - Added an all-family fuzz suite and codec-API tests.
 - Benchmark chart switches to a linear scale; the unused Windows benchmark job
   and its CMake build were removed.

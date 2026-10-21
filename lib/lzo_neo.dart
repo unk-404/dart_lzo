@@ -33,7 +33,7 @@ export 'src/lzo1a.dart' show Lzo1a, Lzo1aLevel;
 export 'src/lzo1b.dart' show Lzo1b, Lzo1bLevel;
 export 'src/lzo1c.dart' show Lzo1c, Lzo1cLevel;
 export 'src/lzo1f.dart' show Lzo1f, Lzo1fLevel;
-export 'src/lzo1x.dart' show Lzo1x, Lzo1xLevel;
+export 'src/lzo1x.dart' show Lzo1x, Lzo1xLevel, Lzo1xSpeed;
 export 'src/lzo1x/encoder_9x.dart' show Lzo999Workspace;
 export 'src/lzo1x/rle.dart' show Lzo1xRle;
 export 'src/lzo1y.dart' show Lzo1y, Lzo1yLevel;

@@ -30,6 +30,10 @@ int lzo1xDecompress(Uint8List source, Uint8List destination) {
     );
   }
 
+  final destinationData = destination.buffer.asByteData(
+    destination.offsetInBytes,
+    destination.lengthInBytes,
+  );
   var ip = 0;
   var op = 0;
   var state = 0;
@@ -221,7 +225,7 @@ int lzo1xDecompress(Uint8List source, Uint8List destination) {
       throwLzo(LzoErrorCode.outputOverrun, inputOffset: ip, outputOffset: op);
     }
 
-    copyMatch(destination, op, distance, length);
+    copyMatch(destination, op, distance, length, data: destinationData);
     op += length;
 
     state = nextState;
@@ -232,7 +236,13 @@ int lzo1xDecompress(Uint8List source, Uint8List destination) {
       if (state > destinationLength - op) {
         throwLzo(LzoErrorCode.outputOverrun, inputOffset: ip, outputOffset: op);
       }
-      copyLiterals(source, ip, destination, op, state);
+      destination[op] = source[ip];
+      if (state > 1) {
+        destination[op + 1] = source[ip + 1];
+        if (state > 2) {
+          destination[op + 2] = source[ip + 2];
+        }
+      }
       ip += state;
       op += state;
     }

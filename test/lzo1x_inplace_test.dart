@@ -649,7 +649,7 @@ void main() {
 
   group('overlap safety contract', () {
     test('a compressed block placed at offset 0 is explicitly rejected', () {
-      final raw = _corpus('text', 1024, 31);
+      final raw = Uint8List(1024);
       final buffer = Uint8List(Lzo1x.compressBound(raw.length));
       final blockLength = codec.compressInto(raw, buffer);
       final block = Uint8List.fromList(
@@ -663,7 +663,9 @@ void main() {
 
       // With the output at offset 0 and no room before the compressed data,
       // a match would overwrite compressed bytes that have not been read yet.
-      final overlapping = Uint8List(raw.length);
+      final overlapping = Uint8List(
+        block.length > raw.length ? block.length : raw.length,
+      );
       overlapping.setRange(0, block.length, block);
       expect(
         () => lzo1xDecompressInPlace(

@@ -42,7 +42,7 @@ needs the caller to supply the output capacity, exactly like liblzo2.
 
 ```yaml
 dependencies:
-  lzo_neo: ^0.1.2
+  lzo_neo: ^0.2.0
 ```
 
 ## Usage
@@ -71,7 +71,7 @@ final decodedLength = codec.decompressInto(output, decoded);
 
 Reuse a codec instance to reuse its compression work memory (64 KiB for
 `Lzo1xLevel.fast1`, 8/16/128 KiB for `fast11`/`fast12`/`fast15`; LZO1X-999 uses
-a 448 KiB sliding-window workspace).
+a 448 KiB sliding-window workspace; ast1 uses a 256 KiB hash table).
 
 Any algorithm, selected by name:
 
@@ -127,17 +127,35 @@ both directions against the Linux kernel compressor/decompressor.
 
 ## Performance
 
-AOT x64, 17.5 MiB mixed corpus (text + binary + source):
+AOT x64, 17.5 MiB mixed corpus, compared with liblzo2 2.10 built with -O2 on
+the same machine:
 
-- LZO1X-1 compression: ~400 MB/s (ByteData-based 32-bit match scanning and
-  8-byte match extension)
-- LZO1X decompression: ~780 MB/s, faster than the C build on the same machine
-- LZO1X-999 is deliberately slow (several MB/s): it exists for pre-compressed
-  data, not real-time use
+| Operation | lzo_neo 0.2 | liblzo2 C | Native ratio |
+|---|---:|---:|---:|
+| LZO1X decompress | ~875-915 MB/s | ~1100 MB/s | **80-83%** |
+| LZO1X-1 compress (astest, mixed) | ~570-585 MB/s | ~880 MB/s | 65-67% |
+| LZO1X-1 compress (astest, 8 MiB text) | ~6.0-6.8 GB/s | ~6.15 GB/s | **~100%** |
+
+Decompression meets the production target. Compression is still limited by
+Dart's per-byte overhead in the match finder; the v0.2 internals use 64-bit
+unaligned loads, an 8-byte match extension and a 16-bit hash table.
+
+### Speed/ratio tuning
+
+Lzo1xSpeed selects how aggressively the fast levels skip literal runs:
+
+`dart
+final fastest = Lzo1x(speed: Lzo1xSpeed.fastest);   // default, ~26% ratio
+final balanced = Lzo1x(speed: Lzo1xSpeed.balanced); // ~22% ratio
+final best = Lzo1x(speed: Lzo1xSpeed.bestRatio);    // ~21.5% ratio
+`
+
+All three produce standard LZO1X streams. Lzo1xLevel.fast1 uses a 256 KiB
+hash table; reuse one codec instance to reuse it.
 
 The CI benchmark card compares LZO1X-1 with liblzo2 2.10 on a deterministic
-corpus. Codec performance for the legacy families is not benchmarked yet; the
-API and correctness are.
+corpus. Legacy-family performance is not benchmarked yet; correctness and the
+API are.
 
 ## License
 

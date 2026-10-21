@@ -27,20 +27,84 @@ const int _m3MaxOffset = 0x4000;
 /// Largest distance encoded by an M4 match.
 const int _m4MaxOffset = 0xbfff;
 
-/// Upper bound on the literal-run length that controls the skip stride.
+/// Whether the VM can use 64-bit unaligned loads (`ByteData.getUint64`).
 ///
-/// liblzo2 restarts its dictionary and skip counter every 48 KiB (the largest
-/// distance an M4 match can address), so its stride never grows beyond this
-/// value. Keeping the same density on longer blocks avoids skipping over
-/// matches in partly incompressible data.
-const int _maxSkipGap = 0xc000;
+/// The web backends implement `getUint64` differently (or not at all), so the
+/// 32-bit path is selected there at compile time.
+const bool _native64 = bool.fromEnvironment('dart.library.io');
+
+/// Length of the match starting at [matchPos] for input at [ip], given that the
+/// first four bytes already match.
+///
+/// Uses 8-byte unaligned loads on the VM and 4-byte loads on the web; the first
+/// differing byte inside a word is located with masks instead of a byte loop.
+@pragma('vm:prefer-inline')
+int _diffIndex64(int diff) {
+  final low = diff & 0xffffffff;
+  return low != 0 ? _firstDiff32(low) : 4 + _firstDiff32(diff >> 32);
+}
+
+@pragma('vm:prefer-inline')
+int _firstDiff32(int diff) {
+  if ((diff & 0xff) != 0) return 0;
+  if ((diff & 0xff00) != 0) return 1;
+  if ((diff & 0xff0000) != 0) return 2;
+  return 3;
+}
+
+@pragma('vm:prefer-inline')
+int _matchLength(
+  ByteData data,
+  Uint8List source,
+  int matchPos,
+  int ip,
+  int maxLength,
+) {
+  var length = 4;
+  if (_native64) {
+    while (length + 8 <= maxLength) {
+      final a = data.getUint64(matchPos + length, Endian.little);
+      final b = data.getUint64(ip + length, Endian.little);
+      if (a != b) {
+        final diff = a ^ b;
+        if ((diff & 0xff) != 0) return length;
+        if ((diff & 0xff00) != 0) return length + 1;
+        if ((diff & 0xff0000) != 0) return length + 2;
+        if ((diff & 0xff000000) != 0) return length + 3;
+        if ((diff & 0xff00000000) != 0) return length + 4;
+        if ((diff & 0xff0000000000) != 0) return length + 5;
+        if ((diff & 0xff000000000000) != 0) return length + 6;
+        return length + 7;
+      }
+      length += 8;
+    }
+  } else {
+    while (length + 4 <= maxLength) {
+      final a = data.getUint32(matchPos + length, Endian.little);
+      final b = data.getUint32(ip + length, Endian.little);
+      if (a != b) {
+        final diff = a ^ b;
+        if ((diff & 0xff) != 0) return length;
+        if ((diff & 0xff00) != 0) return length + 1;
+        if ((diff & 0xff0000) != 0) return length + 2;
+        return length + 3;
+      }
+      length += 4;
+    }
+  }
+  while (length < maxLength &&
+      source[matchPos + length] == source[ip + length]) {
+    length++;
+  }
+  return length;
+}
 
 /// All-zero source used to clear the caller's dictionary.
 ///
 /// `Uint32List.fillRange` is a slow per-element loop for typed data (tens of
 /// microseconds for 16 K entries); `setRange` from a zero buffer is a bulk
 /// copy. The buffer covers the largest level (`fast15`, 32 K entries).
-final Uint32List _zeroDictionary = Uint32List(1 << 15);
+final Uint32List _zeroDictionary = Uint32List(1 << 16);
 
 /// Compresses [source] into [destination].
 ///
@@ -56,8 +120,10 @@ int lzo1xCompress(
   Uint8List source,
   Uint8List destination,
   Lzo1xLevel level,
-  Uint32List dictionary,
-) {
+  Uint32List dictionary, {
+  int skipShift = 5,
+  int skipCap = 0xc000,
+}) {
   final sourceLength = source.length;
   final dictionaryBits = level.dictionaryBits;
   final dictionarySize = 1 << dictionaryBits;
@@ -91,7 +157,9 @@ int lzo1xCompress(
   var ip = 4;
 
   while (ip <= lastMatchStart) {
-    final value = data.getUint32(ip, Endian.little);
+    final value = _native64 && ip + 8 <= sourceLength
+        ? data.getUint64(ip, Endian.little) & 0xffffffff
+        : data.getUint32(ip, Endian.little);
     final hash =
         ((value * 0x1824429d) >>> (32 - dictionaryBits)) & (dictionarySize - 1);
 
@@ -106,20 +174,50 @@ int lzo1xCompress(
           data.getUint32(matchPos, Endian.little) == value) {
         var length = 4;
         final maxLength = sourceLength - ip;
-        // Long matches dominate compressible blocks; compare eight bytes per
-        // iteration, then finish with a byte loop at the first differing block.
-        while (length + 8 <= maxLength) {
-          if (data.getUint32(matchPos + length, Endian.little) !=
-                  data.getUint32(ip + length, Endian.little) ||
-              data.getUint32(matchPos + length + 4, Endian.little) !=
-                  data.getUint32(ip + length + 4, Endian.little)) {
-            break;
+        if (_native64) {
+          while (length < 32 && length + 8 <= maxLength) {
+            final a = data.getUint64(matchPos + length, Endian.little);
+            final b = data.getUint64(ip + length, Endian.little);
+            if (a != b) {
+              length += _diffIndex64(a ^ b);
+              break;
+            }
+            length += 8;
           }
-          length += 8;
-        }
-        while (length < maxLength &&
-            source[matchPos + length] == source[ip + length]) {
-          length++;
+          while (length >= 32 && length + 16 <= maxLength) {
+            final a0 = data.getUint64(matchPos + length, Endian.little);
+            final b0 = data.getUint64(ip + length, Endian.little);
+            if (a0 != b0) {
+              length += _diffIndex64(a0 ^ b0);
+              break;
+            }
+            final a1 = data.getUint64(matchPos + length + 8, Endian.little);
+            final b1 = data.getUint64(ip + length + 8, Endian.little);
+            if (a1 != b1) {
+              length += 8 + _diffIndex64(a1 ^ b1);
+              break;
+            }
+            length += 16;
+          }
+          while (length + 8 <= maxLength) {
+            final a = data.getUint64(matchPos + length, Endian.little);
+            final b = data.getUint64(ip + length, Endian.little);
+            if (a != b) {
+              final diff = a ^ b;
+              final low = diff & 0xffffffff;
+              length += low != 0
+                  ? _firstDiff32(low)
+                  : 4 + _firstDiff32(diff >> 32);
+              break;
+            }
+            length += 8;
+          }
+          while (length < maxLength &&
+              source[matchPos + length] == source[ip + length]) {
+            length++;
+          }
+        } else {
+          length = _matchLength(data, source, matchPos, ip, maxLength);
         }
 
         op = _emitLiteralRun(
@@ -143,7 +241,7 @@ int lzo1xCompress(
     // at the density liblzo2 uses inside one 48 KiB dictionary window so that
     // long incompressible stretches do not degrade match finding.
     final gap = ip - literalStart;
-    ip += 1 + ((gap < _maxSkipGap ? gap : _maxSkipGap) >> 5);
+    ip += 1 + ((gap < skipCap ? gap : skipCap) >> skipShift);
   }
 
   op = _emitLiteralRun(

@@ -14,7 +14,7 @@ import 'lzo1x/encoder_9x.dart';
 import 'lzo1x/level.dart';
 import 'lzo1x/optimize.dart';
 
-export 'lzo1x/level.dart' show Lzo1xLevel;
+export 'lzo1x/level.dart' show Lzo1xLevel, Lzo1xSpeed;
 
 /// A reusable LZO1X compressor/decompressor.
 ///
@@ -31,7 +31,12 @@ final class Lzo1x implements LzoCodec {
   /// [quality] only applies to [Lzo1xLevel.max] and must be in 1..9.
   /// [dictionary] is the preset dictionary used by the 999 level and by
   /// [decompressInto] for blocks that reference one.
-  Lzo1x({this.level = Lzo1xLevel.fast1, this.quality = 9, this.dictionary});
+  Lzo1x({
+    this.level = Lzo1xLevel.fast1,
+    this.quality = 9,
+    this.dictionary,
+    this.speed = Lzo1xSpeed.fastest,
+  });
 
   /// The compression level used by [compress] and [compressInto].
   final Lzo1xLevel level;
@@ -41,6 +46,9 @@ final class Lzo1x implements LzoCodec {
 
   /// The optional preset dictionary (LZO1X-999 only).
   final Uint8List? dictionary;
+
+  /// Match-search aggressiveness for the fast levels.
+  final Lzo1xSpeed speed;
 
   Uint32List? _dictionary;
   Lzo999Workspace? _workspace999;
@@ -80,7 +88,14 @@ final class Lzo1x implements LzoCodec {
       );
     }
     final work = _dictionary ??= Uint32List(level.dictionarySize);
-    return lzo1xCompress(input, destination, level, work);
+    return lzo1xCompress(
+      input,
+      destination,
+      level,
+      work,
+      skipShift: speed.skipShift,
+      skipCap: speed.skipCap,
+    );
   }
 
   /// Compresses [source] into a newly allocated [Bytes].
