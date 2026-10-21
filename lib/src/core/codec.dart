@@ -3,7 +3,7 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:blit/blit.dart';
+import 'package:blit/blit_buffer.dart';
 
 import 'errors.dart';
 import 'limits.dart';

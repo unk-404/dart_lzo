@@ -11,7 +11,7 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:blit/blit.dart';
+import 'package:blit/blit_buffer.dart';
 
 import '../core/checksum.dart';
 import '../core/errors.dart';
@@ -100,7 +100,9 @@ final class Lzop {
   Uint8List compress(
     Uint8List source, {
     LzopOptions options = const LzopOptions(),
-  }) {
+  }) => _compress(source, options).asUint8List();
+
+  Bytes _compress(Uint8List source, LzopOptions options) {
     if (options.blockSize <= 0 || options.blockSize > _maxBlockSize) {
       throwLzo(
         LzoErrorCode.invalidArgument,
@@ -124,27 +126,27 @@ final class Lzop {
       if (options.compressedChecksums) flags |= _fAdler32C;
     }
 
-    final header = BytesBuilder(copy: false);
+    final header = BytesMut(32 + nameBytes.length);
     _putUint16(header, _lzopVersion);
     _putUint16(header, _libVersion);
     _putUint16(header, _versionNeeded);
-    header.addByte(_methodForLevel(options.level));
-    header.addByte(options.level == Lzo1xLevel.max ? options.quality : 1);
+    header.putUint8(_methodForLevel(options.level));
+    header.putUint8(options.level == Lzo1xLevel.max ? options.quality : 1);
     _putUint32(header, flags);
     _putUint32(header, options.mode & 0xffffffff);
     _putUint32(header, options.mtime & 0xffffffff);
     _putUint32(header, (options.mtime >> 32) & 0xffffffff);
-    header.addByte(nameBytes.length);
-    header.add(nameBytes);
+    header.putUint8(nameBytes.length);
+    header.putBytes(Bytes.fromUint8List(nameBytes));
 
-    final headerBytes = header.takeBytes();
+    final headerBytes = header.freeze();
     // The header checksum is Adler-32 unless F_H_CRC32 is set; crc32
     // selects the block checksum algorithm only.
-    final headerChecksum = lzoAdler32(1, headerBytes);
+    final headerChecksum = lzoAdler32(1, headerBytes.asUint8List());
 
-    final out = BytesBuilder(copy: false);
-    out.add(_magic);
-    out.add(headerBytes);
+    final out = BytesMut(source.length + 64);
+    out.putSlice(_magic);
+    out.putBytes(headerBytes);
     _putUint32(out, headerChecksum);
 
     final codec = Lzo1x(level: options.level, quality: options.quality);
@@ -173,17 +175,23 @@ final class Lzop {
         } else if (options.compressedChecksums) {
           _putUint32(out, lzoAdler32(1, compressed, 0, compressedLength));
         }
-        out.add(Uint8List.sublistView(compressed, 0, compressedLength));
+        out.putBytes(
+          Bytes.fromUint8List(
+            Uint8List.sublistView(compressed, 0, compressedLength),
+          ),
+        );
       } else {
-        out.add(raw);
+        out.putBytes(Bytes.fromUint8List(raw));
       }
     }
     _putUint32(out, 0);
-    return out.takeBytes();
+    return out.freeze();
   }
 
   /// Decompresses a complete `.lzo` file.
-  Uint8List decompress(Uint8List source) {
+  Uint8List decompress(Uint8List source) => _decompress(source).asUint8List();
+
+  Bytes _decompress(Uint8List source) {
     final reader = _Reader(source);
     final headerStart = reader.offset;
     if (source.length < _magic.length || !_hasMagic(source)) {
@@ -296,7 +304,7 @@ final class Lzop {
       }
     }
 
-    final output = BytesBuilder(copy: false);
+    final output = BytesMut(source.length + 64);
     final codec = Lzo1x();
     while (true) {
       final uncompressedLength = reader.readUint32();
@@ -380,7 +388,7 @@ final class Lzop {
           inputOffset: reader.offset,
         );
       }
-      output.add(block);
+      output.putBytes(Bytes.fromUint8List(block));
     }
     if (!reader.atEnd) {
       throwLzo(
@@ -389,18 +397,17 @@ final class Lzop {
         inputOffset: reader.offset,
       );
     }
-    return output.takeBytes();
+    return output.freeze();
   }
 
   /// Compresses a zero-copy [Bytes] view into a `.lzo` file.
   Bytes compressBytes(
     Bytes source, {
     LzopOptions options = const LzopOptions(),
-  }) => Bytes.fromUint8List(compress(source.asUint8List(), options: options));
+  }) => _compress(source.asUint8List(), options);
 
   /// Decompresses a [Bytes] view of a `.lzo` file.
-  Bytes decompressBytes(Bytes source) =>
-      Bytes.fromUint8List(decompress(source.asUint8List()));
+  Bytes decompressBytes(Bytes source) => _decompress(source.asUint8List());
 }
 
 int _methodForLevel(Lzo1xLevel level) => switch (level) {
@@ -425,71 +432,54 @@ bool _hasMagic(Uint8List source) {
   return true;
 }
 
-void _putUint16(BytesBuilder builder, int value) {
-  builder
-    ..addByte((value >> 8) & 0xff)
-    ..addByte(value & 0xff);
-}
+void _putUint16(BytesMut builder, int value) =>
+    builder.putUint16(value, endian: Endian.big);
 
-void _putUint32(BytesBuilder builder, int value) {
-  builder
-    ..addByte((value >> 24) & 0xff)
-    ..addByte((value >> 16) & 0xff)
-    ..addByte((value >> 8) & 0xff)
-    ..addByte(value & 0xff);
-}
+void _putUint32(BytesMut builder, int value) =>
+    builder.putUint32(value, endian: Endian.big);
 
 final class _Reader {
-  _Reader(this.data) : offset = 0;
+  _Reader(Uint8List data) : _delegate = BytesReader(Bytes.view(data));
 
-  final Uint8List data;
-  int offset;
+  final BytesReader _delegate;
 
-  bool get atEnd => offset == data.length;
+  int get offset => _delegate.position;
 
-  int get remaining => data.length - offset;
+  bool get atEnd => !_delegate.hasRemaining;
+
+  int get remaining => _delegate.remaining;
 
   int readUint8() {
     _need(1);
-    return data[offset++];
+    return _delegate.readUint8Unchecked();
   }
 
   int readUint16() {
     _need(2);
-    final value = (data[offset] << 8) | data[offset + 1];
-    offset += 2;
-    return value;
+    return _delegate.readUint16Unchecked();
   }
 
   int readUint32() {
     _need(4);
-    final value =
-        (data[offset] << 24) |
-        (data[offset + 1] << 16) |
-        (data[offset + 2] << 8) |
-        data[offset + 3];
-    offset += 4;
-    return value & 0xffffffff;
+    return _delegate.readUint32Unchecked() & 0xffffffff;
   }
 
   void skipBytes(int count) {
     _need(count);
-    offset += count;
+    _delegate.advance(count);
   }
 
   Uint8List readView(int count) {
     _need(count);
-    final view = Uint8List.sublistView(data, offset, offset + count);
-    offset += count;
-    return view;
+    return _delegate.readBytes(count).asUint8List();
   }
 
   void _need(int count) {
-    if (count < 0 || offset + count > data.length) {
+    if (count < 0 || _delegate.remaining < count) {
       throwLzo(
         LzoErrorCode.inputOverrun,
         message: 'truncated lzop file',
-        inputOffset: offset,
+        inputOffset: _delegate.position,
       );
     }
   }

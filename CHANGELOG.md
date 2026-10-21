@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1
+
+- Upgrade to lit 0.2.0.
+- lzop internals now use blit: BytesReader for header/block parsing,
+  BytesMut for output assembly, and zero-copy Bytes views for payloads.
+- Lzop.compressBytes/decompressBytes no longer copy the result.
+- Core imports use package:blit/blit_buffer.dart, keeping the web build free
+  of the file-I/O layer.
+
 ## 0.2.0
 
 Performance-focused redesign, with no stream-format changes.

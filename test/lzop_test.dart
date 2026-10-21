@@ -91,6 +91,13 @@ void main() {
       expect(lzop.decompress(file), orderedEquals(source));
     });
 
+    test('Bytes API round-trips', () {
+      final source = _random(100000, 5);
+      final file = lzop.compressBytes(Bytes.fromUint8List(source));
+      final restored = lzop.decompressBytes(file);
+      expect(restored.asUint8List(), orderedEquals(source));
+    });
+
     test('LZO1X-999 payloads round-trip', () {
       final source = _text(200000);
       final file = lzop.compress(

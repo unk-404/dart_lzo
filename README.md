@@ -42,7 +42,7 @@ needs the caller to supply the output capacity, exactly like liblzo2.
 
 ```yaml
 dependencies:
-  lzo_neo: ^0.2.0
+  lzo_neo: ^0.2.1
 ```
 
 ## Usage
